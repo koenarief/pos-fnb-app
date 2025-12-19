@@ -3,14 +3,47 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config'; // Pastikan path config benar
 import { signOut } from 'firebase/auth';
 import { 
+  Loader2,
   ShoppingCart, 
-  UtensilsCrossed, 
-  LayoutDashboard, 
-  ClipboardList, 
-  Settings, 
-  LogOut,
-  Loader2 
+  Wallet, 
+  BarChart3, 
+  Utensils, 
+  Calculator, 
+  LogOut 
 } from 'lucide-react';
+
+const menuItems = [
+  { 
+    title: 'Kasir / POS', 
+    icon: <ShoppingCart size={40} />, 
+    color: 'bg-blue-600', 
+    path: '/pos' 
+  },
+  { 
+    title: 'Biaya', 
+    icon: <Wallet size={40} />, // Wallet lebih cocok untuk pengeluaran/biaya
+    color: 'bg-orange-500', 
+    path: '/expenses' 
+  },
+  { 
+    title: 'Laporan', 
+    icon: <BarChart3 size={40} />, // BarChart3 mencerminkan grafik data penjualan
+    color: 'bg-emerald-500', 
+    path: '/reports' 
+  },
+  { 
+    title: 'Manajemen Menu', 
+    icon: <Utensils size={40} />, // Utensils langsung merujuk pada makanan/minuman (FnB)
+    color: 'bg-purple-500', 
+    path: '/menu/manage' 
+  },
+  { 
+    title: 'Laba Rugi', 
+    icon: <Calculator size={40} />, // Calculator melambangkan perhitungan profit bersih
+    color: 'bg-slate-700', 
+    path: '/profit-loss' 
+  },
+];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -34,14 +67,6 @@ const Home = () => {
     }
   };
 
-
-  const menuItems = [
-    { title: 'Kasir / POS', icon: <ShoppingCart size={40} />, color: 'bg-blue-500', path: '/pos' },
-    { title: 'Biaya', icon: <UtensilsCrossed size={40} />, color: 'bg-orange-500', path: '/expenses' },
-    { title: 'Laporan', icon: <LayoutDashboard size={40} />, color: 'bg-emerald-500', path: '/reports' },
-    { title: 'Manajemen Menu', icon: <ClipboardList size={40} />, color: 'bg-purple-500', path: '/menu/manage' },
-    { title: 'Laba Rugi', icon: <Settings size={40} />, color: 'bg-slate-600', path: '/profit-loss' },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
