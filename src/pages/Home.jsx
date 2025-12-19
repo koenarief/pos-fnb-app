@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config'; // Pastikan path config benar
 import { signOut } from 'firebase/auth';
@@ -9,10 +9,11 @@ import {
   BarChart3, 
   Utensils, 
   Calculator, 
-  LogOut 
+  LogOut, Settings
 } from 'lucide-react';
 import { toast } from "react-toastify";
 import ConfirmDialog from "../components/ConfirmDialog";
+import { getMerchantProfile } from '../firebase/dataService'; // Pastikan fungsi ini sudah di-export di dataService
 
 const menuItems = [
   { 
@@ -45,12 +46,36 @@ const menuItems = [
     color: 'bg-slate-700', 
     path: '/profit-loss' 
   },
+  { 
+    title: 'Setting', 
+    icon: <Settings size={40} />, // Calculator melambangkan perhitungan profit bersih
+    color: 'bg-slate-700', 
+    path: '/settings' 
+  },
 ];
 
 const Home = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [openLogout, setOpenLogout] = React.useState(false);
+  const [merchantName, setMerchantName] = useState('Caffè POS'); // Nama default
+  const userId = auth.currentUser?.uid;
+
+  // Ambil data merchant saat halaman dimuat
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!userId) return;
+      try {
+        const profile = await getMerchantProfile(userId);
+        if (profile && profile.merchantName) {
+          setMerchantName(profile.merchantName);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil nama merchant:", error);
+      }
+    };
+    fetchProfile();
+  }, [userId]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -71,7 +96,7 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b px-8 py-6 flex justify-between items-center shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Caffè POS Terminal</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{merchantName}</h1>
           <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email}</p>
         </div>
         

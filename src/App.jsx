@@ -16,6 +16,7 @@ import ManageMenu from "./pages/ManageMenu";
 import Reports from "./pages/Reports";
 import Expenses from "./pages/Expenses";
 import ProfitLoss from "./pages/ProfitLoss";
+import Settings from './pages/Settings';
 import { ToastContainer } from "react-toastify";
 
 // Komponen sederhana untuk halaman lain yang belum dibuat
@@ -75,10 +76,6 @@ function App() {
             element={user ? <ManageMenu /> : <Navigate to="/login" />}
           />
           <Route
-            path="/settings"
-            element={<Placeholder title="Pengaturan" />}
-          />
-          <Route
             path="/expenses"
             element={user ? <Expenses /> : <Navigate to="/login" />}
           />
@@ -86,6 +83,7 @@ function App() {
             path="/profit-loss"
             element={user ? <ProfitLoss /> : <Navigate to="/login" />}
           />
+		  <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
         </Routes>
       </Router>
       <ToastContainer />

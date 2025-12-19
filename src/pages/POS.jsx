@@ -120,7 +120,7 @@ const POS = () => {
             <div
               key={product.id}
               onClick={() => addToCart(product)}
-              className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col"
+              className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col md:max-h-48"
             >
               {product.image && (
                 <div className="aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">

@@ -1,5 +1,5 @@
 import { db } from './config';
-import { doc, updateDoc, deleteDoc, collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { query, orderBy, limit } from 'firebase/firestore';
 
 // Ambil semua transaksi milik user
@@ -97,4 +97,18 @@ export const getFinancialData = async (userId) => {
     getDataByUserId(userId, 'expenses')
   ]);
   return { transactions, expenses };
+};
+
+// Mendapatkan data profil merchant
+export const getMerchantProfile = async (userId) => {
+  if (!userId) return null;
+  const docRef = doc(db, 'users', userId, 'settings', 'merchantProfile');
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? docSnap.data() : null;
+};
+
+// Menyimpan atau mengupdate profil merchant
+export const saveMerchantProfile = async (userId, profileData) => {
+  const docRef = doc(db, 'users', userId, 'settings', 'merchantProfile');
+  return await setDoc(docRef, profileData, { merge: true });
 };
