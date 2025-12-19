@@ -5,6 +5,7 @@ import { auth } from "../firebase/config"; // Import auth
 import { getProducts, saveTransaction } from "../firebase/dataService";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 // import { printReceipt } from "../utils/printer";
 
 const sampleProducts = [
@@ -75,7 +76,7 @@ const POS = () => {
   };
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return alert("Keranjang kosong!");
+    if (cart.length === 0) return toast("Keranjang kosong!");
 
     try {
       const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
@@ -84,17 +85,17 @@ const POS = () => {
         totalAmount: total,
         cashierEmail: auth.currentUser.email,
       });
-      alert("Transaksi Tersimpan di Database Anda!");
+      toast("Transaksi Tersimpan di Database Anda!");
       setCart([]);
 
       // const isSuccess = await printReceipt("CAFÉ DIGITAL", cart, total);
 
       // if (isSuccess) {
-      // alert("Transaksi Selesai & Struk Dicetak!");
+      // toast("Transaksi Selesai & Struk Dicetak!");
       // setCart([]);
       // }
     } catch (error) {
-      alert("Gagal simpan transaksi");
+      toast("Gagal simpan transaksi");
     }
   };
 

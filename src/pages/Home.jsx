@@ -11,6 +11,7 @@ import {
   Calculator, 
   LogOut 
 } from 'lucide-react';
+import { toast } from "react-toastify";
 
 const menuItems = [
   { 
@@ -61,7 +62,7 @@ const Home = () => {
       // dan otomatis mengarahkan ke halaman /login
     } catch (error) {
       console.error("Error saat logout:", error);
-      alert("Gagal keluar. Silakan coba lagi.");
+      toast("Gagal keluar. Silakan coba lagi.");
     } finally {
       setIsLoggingOut(false);
     }

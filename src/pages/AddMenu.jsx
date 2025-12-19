@@ -4,6 +4,7 @@ import { auth } from '../firebase/config';
 import { addProduct } from '../firebase/dataService';
 import { ArrowLeft, Save, Package, Tag, Layers, Image as ImageIcon, Loader2 } from 'lucide-react';
 import ImageUploader from "../components/ImageUploader";
+import { toast } from "react-toastify";
 
 const AddMenu = () => {
   const navigate = useNavigate();
@@ -23,11 +24,11 @@ const AddMenu = () => {
 
     try {
       await addProduct(userId, formData);
-      alert("Produk berhasil ditambahkan!");
+      toast("Produk berhasil ditambahkan!");
       navigate('/pos'); // Kembali ke POS setelah berhasil
     } catch (error) {
       console.error(error);
-      alert("Gagal menambahkan produk.");
+      toast("Gagal menambahkan produk.");
     } finally {
       setLoading(false);
     }

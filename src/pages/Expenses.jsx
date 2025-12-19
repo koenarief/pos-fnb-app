@@ -3,6 +3,7 @@ import { auth } from '../firebase/config';
 import { addExpense, getExpenses } from '../firebase/dataService';
 import { ArrowLeft, Plus, Receipt, Wallet, Loader2, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
 
 const Expenses = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Expenses = () => {
       setForm({ title: '', amount: '', category: 'Bahan Baku' });
       fetchData(); // Refresh list
     } catch (error) {
-      alert("Gagal mencatat pengeluaran");
+      toast("Gagal mencatat pengeluaran");
     } finally {
       setLoading(false);
     }

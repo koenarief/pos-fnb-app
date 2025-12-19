@@ -3,6 +3,7 @@ import { auth } from '../firebase/config';
 import { getProducts, updateProduct, deleteProduct } from '../firebase/dataService';
 import { ArrowLeft, Edit3, Trash2, Save, X, Loader2, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
 
 const ManageMenu = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const ManageMenu = () => {
       fetchData(); // Refresh data
     } catch (error) {
 	  console.error(error);
-      alert("Gagal mengupdate produk");
+      toast("Gagal mengupdate produk");
     }
   };
 
@@ -46,7 +47,7 @@ const ManageMenu = () => {
         await deleteProduct(userId, id);
         fetchData();
       } catch (error) {
-        alert("Gagal menghapus produk");
+        toast("Gagal menghapus produk");
       }
     }
   };
