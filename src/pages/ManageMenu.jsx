@@ -66,7 +66,7 @@ const ManageMenu = () => {
         </button>
       </header>
 
-      <main className="p-6">
+      <main className="p-6  max-w-6xl mx-auto w-full">
         <div className="bg-white rounded-3xl shadow-sm border overflow-hidden">
           {loading ? (
             <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-blue-500" /></div>

@@ -37,10 +37,10 @@ const Home = () => {
 
   const menuItems = [
     { title: 'Kasir / POS', icon: <ShoppingCart size={40} />, color: 'bg-blue-500', path: '/pos' },
-    { title: 'Dapur', icon: <UtensilsCrossed size={40} />, color: 'bg-orange-500', path: '/kitchen' },
+    { title: 'Biaya', icon: <UtensilsCrossed size={40} />, color: 'bg-orange-500', path: '/expenses' },
     { title: 'Laporan', icon: <LayoutDashboard size={40} />, color: 'bg-emerald-500', path: '/reports' },
     { title: 'Manajemen Menu', icon: <ClipboardList size={40} />, color: 'bg-purple-500', path: '/menu/manage' },
-    { title: 'Pengaturan', icon: <Settings size={40} />, color: 'bg-slate-600', path: '/settings' },
+    { title: 'Laba Rugi', icon: <Settings size={40} />, color: 'bg-slate-600', path: '/profit-loss' },
   ];
 
   return (

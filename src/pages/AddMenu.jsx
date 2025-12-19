@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config';
 import { addProduct } from '../firebase/dataService';
 import { ArrowLeft, Save, Package, Tag, Layers, Image as ImageIcon, Loader2 } from 'lucide-react';
+import ImageUploader from "../components/ImageUploader";
 
 const AddMenu = () => {
   const navigate = useNavigate();
@@ -102,13 +103,8 @@ const AddMenu = () => {
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">URL Gambar (Opsional)</label>
               <div className="relative">
-                <ImageIcon className="absolute left-3 top-3 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://image-url.com/kopi.jpg"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
+                <ImageUploader
+                  setImageUrl={(image) => setFormData({...formData, image: image})}
                 />
               </div>
             </div>

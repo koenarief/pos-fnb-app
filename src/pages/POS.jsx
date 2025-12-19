@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase/config"; // Pastikan config firebase sudah ada
 import { collection, getDocs, addDoc } from "firebase/firestore";
-import { auth } from '../firebase/config'; // Import auth
-import { getProducts, saveTransaction } from '../firebase/dataService';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { auth } from "../firebase/config"; // Import auth
+import { getProducts, saveTransaction } from "../firebase/dataService";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Loader2 } from "lucide-react";
+// import { printReceipt } from "../utils/printer";
 
 const sampleProducts = [
   { id: 1, name: "tempe", price: 1000 },
@@ -23,7 +24,7 @@ const POS = () => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
 
-// Ambil ID User yang sedang login
+  // Ambil ID User yang sedang login
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
@@ -40,7 +41,6 @@ const POS = () => {
     };
     fetchMenu();
   }, [userId]);
-
 
   // Hitung total setiap kali cart berubah
   useEffect(() => {
@@ -76,16 +76,23 @@ const POS = () => {
 
   const handleCheckout = async () => {
     if (cart.length === 0) return alert("Keranjang kosong!");
-    
+
     try {
-      const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+      const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
       await saveTransaction(userId, {
         items: cart,
         totalAmount: total,
-        cashierEmail: auth.currentUser.email
+        cashierEmail: auth.currentUser.email,
       });
       alert("Transaksi Tersimpan di Database Anda!");
       setCart([]);
+
+      // const isSuccess = await printReceipt("CAFÉ DIGITAL", cart, total);
+
+      // if (isSuccess) {
+      // alert("Transaksi Selesai & Struk Dicetak!");
+      // setCart([]);
+      // }
     } catch (error) {
       alert("Gagal simpan transaksi");
     }
@@ -106,15 +113,21 @@ const POS = () => {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sisi Kiri: Menu (Daftar Produk) */}
-        <div className="flex-1 p-4 overflow-y-auto grid grid-cols-3 gap-4">
+        <div className="flex-1 p-4 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-4">
           {products.map((product) => (
             <div
               key={product.id}
               onClick={() => addToCart(product)}
-              className="bg-white p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition"
+              className="bg-white p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition max-h-72"
             >
-              <div className="h-24 bg-gray-200 rounded-lg mb-2"></div>{" "}
-              {/* Placeholder Foto */}
+              <div className="h-48 bg-gray-200 rounded-lg mb-2">
+                <img
+                  src={product.image}
+                  className="w-full h-full object-cover"
+                  alt=""
+                />
+              </div>
+
               <h3 className="font-semibold text-gray-700">{product.name}</h3>
               <p className="text-blue-600 font-bold">
                 Rp {product.price.toLocaleString()}

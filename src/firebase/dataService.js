@@ -1,5 +1,21 @@
 import { db } from './config';
 import { doc, updateDoc, deleteDoc, collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { query, orderBy, limit } from 'firebase/firestore';
+
+// Ambil semua transaksi milik user
+export const getTransactions = async (userId) => {
+  if (!userId) return [];
+  const transCol = collection(db, 'users', userId, 'transactions');
+  // Urutkan berdasarkan waktu terbaru
+  const q = query(transCol, orderBy('timestamp', 'desc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ 
+    id: doc.id, 
+    ...doc.data(),
+    // Konversi timestamp Firebase ke JS Date agar mudah dibaca
+    date: doc.data().timestamp?.toDate() 
+  }));
+};
 
 // Fungsi untuk mendapatkan referensi koleksi produk milik user tertentu
 const getProductCol = (userId) => collection(db, 'users', userId, 'products');
@@ -43,4 +59,42 @@ export const updateProduct = async (userId, productId, updatedData) => {
 export const deleteProduct = async (userId, productId) => {
   const productRef = doc(db, 'users', userId, 'products', productId);
   return await deleteDoc(productRef);
+};
+
+// Tambah Pengeluaran
+export const addExpense = async (userId, expenseData) => {
+  const colRef = collection(db, 'users', userId, 'expenses');
+  return await addDoc(colRef, {
+    ...expenseData,
+    amount: Number(expenseData.amount),
+    date: serverTimestamp()
+  });
+};
+
+// Ambil List Pengeluaran
+export const getExpenses = async (userId) => {
+  const colRef = collection(db, 'users', userId, 'expenses');
+  const q = query(colRef, orderBy('date', 'desc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+// Helper untuk ambil data koleksi apapun milik user
+const getDataByUserId = async (userId, collectionName) => {
+  const colRef = collection(db, 'users', userId, collectionName);
+  const q = query(colRef, orderBy(collectionName === 'transactions' ? 'timestamp' : 'date', 'desc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ 
+    id: doc.id, 
+    ...doc.data(),
+    amount: doc.data().totalAmount || doc.data().amount || 0 
+  }));
+};
+
+export const getFinancialData = async (userId) => {
+  const [transactions, expenses] = await Promise.all([
+    getDataByUserId(userId, 'transactions'),
+    getDataByUserId(userId, 'expenses')
+  ]);
+  return { transactions, expenses };
 };
