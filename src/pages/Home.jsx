@@ -12,6 +12,7 @@ import {
   LogOut 
 } from 'lucide-react';
 import { toast } from "react-toastify";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const menuItems = [
   { 
@@ -49,12 +50,9 @@ const menuItems = [
 const Home = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const [openLogout, setOpenLogout] = React.useState(false);
 
   const handleLogout = async () => {
-    // Konfirmasi sebelum logout (sangat penting untuk tablet agar tidak salah tekan)
-    const confirmLogout = window.confirm("Apakah Anda yakin ingin keluar dari sistem?");
-    if (!confirmLogout) return;
-
     setIsLoggingOut(true);
     try {
       await signOut(auth);
@@ -78,7 +76,7 @@ const Home = () => {
         </div>
         
         <button 
-          onClick={handleLogout}
+          onClick={() => setOpenLogout(true)}
           disabled={isLoggingOut}
           className="flex items-center gap-2 px-4 py-2 text-red-600 font-bold border-2 border-red-100 rounded-xl hover:bg-red-50 active:scale-95 transition-all disabled:opacity-50"
         >
@@ -91,6 +89,12 @@ const Home = () => {
             </>
           )}
         </button>
+		<ConfirmDialog
+			text="Apakah Anda yakin ingin keluar dari sistem?"
+			isOpen={openLogout}
+			onCancel={() => setOpenLogout(false)} 
+			onConfirm={() => handleLogout()}
+		/>
       </header>
 
       <main className="flex-1 p-8 overflow-y-auto">
