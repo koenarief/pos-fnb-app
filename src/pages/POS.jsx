@@ -101,8 +101,8 @@ const POS = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header POS */}
-      <div className="bg-white p-4 flex items-center gap-4 border-b">
+      {/* Header POS - Tetap di atas */}
+      <div className="bg-white p-4 flex items-center gap-4 border-b shrink-0">
         <button
           onClick={() => navigate("/")}
           className="p-2 hover:bg-gray-100 rounded-full"
@@ -112,64 +112,84 @@ const POS = () => {
         <h2 className="text-xl font-bold">Menu Transaksi</h2>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sisi Kiri: Menu (Daftar Produk) */}
+      {/* Container Utama: flex-col (HP), flex-row (Desktop) */}
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+        {/* SISI ATAS (HP) / SISI KIRI (Desktop): Daftar Produk */}
         <div className="flex-1 p-4 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-4">
           {products.map((product) => (
             <div
               key={product.id}
               onClick={() => addToCart(product)}
-              className="bg-white p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition max-h-72"
+              className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col"
             >
-              <div className="h-48 bg-gray-200 rounded-lg mb-2">
-                <img
-                  src={product.image}
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
-              </div>
-
-              <h3 className="font-semibold text-gray-700">{product.name}</h3>
-              <p className="text-blue-600 font-bold">
+              {product.image && (
+                <div className="aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                  <img
+                    src={product.image}
+                    className="w-full h-full object-cover"
+                    alt={product.name}
+                  />
+                </div>
+              )}
+              <h3 className="font-semibold text-gray-700 text-sm md:text-base line-clamp-1">
+                {product.name}
+              </h3>
+              <p className="text-blue-600 font-bold text-sm md:text-lg">
                 Rp {product.price.toLocaleString()}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Sisi Kanan: Cart */}
-        <div className="w-80 bg-white border-l p-4 flex flex-col">
-          {cart.length > 0 && (
-            <div className="border-b">
-              <h3 className="font-bold border-b pb-2 mb-4">Pesanan</h3>
-              {cart.map((item) => (
+        {/* SISI BAWAH (HP) / SISI KANAN (Desktop): Detail Pesanan */}
+        {/* h-[40vh] memberikan tinggi tetap di HP agar scrollable aktif */}
+        <div className="w-full md:w-80 bg-white border-t md:border-t-0 md:border-l flex flex-col shrink-0 h-[45vh] md:h-full shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none">
+          <div className="p-4 border-b shrink-0 flex justify-between items-center">
+            <h3 className="font-bold text-gray-800">Detail Pesanan</h3>
+            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500 italic">
+              Tap item untuk hapus
+            </span>
+          </div>
+
+          {/* Area Item Pesanan - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+            {cart.length > 0 ? (
+              cart.map((item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between mb-4 items-center"
+                  className="flex justify-between items-center group active:bg-red-50 p-1 rounded transition"
                   onClick={() => removeFromCart(item)}
                 >
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">x{item.qty}</p>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-gray-800">
+                      {item.name}
+                    </p>
+                    <p className="text-xs text-gray-400">x{item.qty}</p>
                   </div>
-                  <p className="font-semibold">
+                  <p className="font-bold text-sm text-gray-700 ml-2">
                     Rp {(item.price * item.qty).toLocaleString()}
                   </p>
                 </div>
-              ))}
-            </div>
-          )}
-          <div className="p-4 bg-gray-50">
+              ))
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-400 text-sm italic">
+                Keranjang kosong
+              </div>
+            )}
+          </div>
+
+          {/* Ringkasan Total & Tombol Bayar - Sticky di paling bawah */}
+          <div className="p-4 bg-gray-50 border-t mt-auto shrink-0">
             <div className="flex justify-between mb-4">
-              <span className="text-lg">Total</span>
-              <span className="text-2xl font-bold text-blue-600">
+              <span className="text-gray-500 font-medium">Total</span>
+              <span className="text-2xl font-black text-blue-600">
                 Rp {total.toLocaleString()}
               </span>
             </div>
             {total > 0 && (
               <button
                 onClick={handleCheckout}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg active:bg-blue-700"
+                className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-transform"
               >
                 BAYAR
               </button>
