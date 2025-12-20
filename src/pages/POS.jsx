@@ -6,12 +6,17 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 // import { printReceipt } from "../utils/printer";
 import { useUserClaims } from "../firebase/userClaims";
+import { useSelector, useDispatch } from 'react-redux';
+import { addToCart, removeFromCart, clearCart } from '../store/cartSlice';
 
 const POS = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
+
+  const dispatch = useDispatch();
+  // Ambil data dari Redux Store
+  const cartItems = useSelector((state) => state.cart.items);
+  const totalAmount = useSelector((state) => state.cart.totalAmount);
 
   // Ambil ID User yang sedang login
   const userId = auth.currentUser?.uid;
@@ -22,7 +27,14 @@ const POS = () => {
       if (!claims?.merchantId) return; // Pastikan user ada
       try {
         const data = await getProducts(claims?.merchantId); // Ambil data spesifik user ini
-        setProducts(data);
+        const serializedData = data.map(product => ({
+          ...product,
+          createdAt: product.createdAt?.seconds 
+            ? product.createdAt.toMillis() // Ubah ke milidetik
+            : Date.now()
+        }));
+
+        setProducts(serializedData);
       } catch (error) {
         console.error("Gagal ambil menu:", error);
       }
@@ -30,50 +42,18 @@ const POS = () => {
     fetchMenu();
   }, [claims?.merchantId]);
 
-  // Hitung total setiap kali cart berubah
-  useEffect(() => {
-    const sum = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
-    setTotal(sum);
-  }, [cart]);
-
-  const addToCart = (product) => {
-    const existing = cart.find((item) => item.id === product.id);
-    if (existing) {
-      setCart(
-        cart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
-        ),
-      );
-    } else {
-      setCart([...cart, { ...product, qty: 1 }]);
-    }
-  };
-
-  const removeFromCart = (product) => {
-    const existing = cart.find((item) => item.id === product.id);
-    if (existing) {
-      setCart(
-        cart
-          .map((item) =>
-            item.id === product.id ? { ...item, qty: item.qty - 1 } : item,
-          )
-          .filter((item) => item.qty > 0),
-      );
-    }
-  };
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return toast("Keranjang kosong!");
+    if (cartItems.length === 0) return toast("Keranjang kosong!");
 
     try {
-      const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
       await saveTransaction(claims?.merchantId, userId, {
-        items: cart,
-        totalAmount: total,
+        items: cartItems,
+        totalAmount: totalAmount,
         cashierEmail: auth.currentUser.email,
       });
       toast("Transaksi Tersimpan di Database Anda!");
-      setCart([]);
+      dispatch(clearCart());
 
       // const isSuccess = await printReceipt("CAFÉ DIGITAL", cart, total);
 
@@ -82,6 +62,7 @@ const POS = () => {
       // setCart([]);
       // }
     } catch (error) {
+      console.error("Gagal simpan transaksi:", error);
       toast("Gagal simpan transaksi");
     }
   };
@@ -106,7 +87,7 @@ const POS = () => {
           {products.map((product) => (
             <div
               key={product.id}
-              onClick={() => addToCart(product)}
+              onClick={() => dispatch(addToCart(product))}
               className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col md:max-h-48"
             >
               {product.image && (
@@ -140,12 +121,12 @@ const POS = () => {
 
           {/* Area Item Pesanan - Scrollable */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-            {cart.length > 0 ? (
-              cart.map((item) => (
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-center group active:bg-red-50 p-1 rounded transition"
-                  onClick={() => removeFromCart(item)}
+                  onClick={() => dispatch(removeFromCart(item))}
                 >
                   <div className="flex-1">
                     <p className="font-medium text-sm text-gray-800">
@@ -170,10 +151,10 @@ const POS = () => {
             <div className="flex justify-between mb-4">
               <span className="text-gray-500 font-medium">Total</span>
               <span className="text-2xl font-black text-blue-600">
-                Rp {total.toLocaleString()}
+                Rp {totalAmount.toLocaleString()}
               </span>
             </div>
-            {total > 0 && (
+            {totalAmount > 0 && (
               <button
                 onClick={handleCheckout}
                 className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-transform"
