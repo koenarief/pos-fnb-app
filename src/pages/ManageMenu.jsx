@@ -4,10 +4,12 @@ import { getProducts, updateProduct, deleteProduct } from '../firebase/dataServi
 import { ArrowLeft, Edit3, Trash2, Save, X, Loader2, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { useUserClaims } from "../firebase/userClaims";
 
 const ManageMenu = () => {
   const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,11 +18,11 @@ const ManageMenu = () => {
 
   useEffect(() => {
     fetchData();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await getProducts(userId);
+    const data = await getProducts(claims?.merchantId);
     setProducts(data);
     setLoading(false);
   };
@@ -32,7 +34,7 @@ const ManageMenu = () => {
 
   const handleUpdate = async (id) => {
     try {
-      await updateProduct(userId, id, editForm);
+      await updateProduct(claims?.merchantId, id, editForm);
       setEditingId(null);
       fetchData(); // Refresh data
     } catch (error) {
@@ -44,7 +46,7 @@ const ManageMenu = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Hapus produk ini secara permanen?")) {
       try {
-        await deleteProduct(userId, id);
+        await deleteProduct(claims?.merchantId, id);
         fetchData();
       } catch (error) {
         toast("Gagal menghapus produk");

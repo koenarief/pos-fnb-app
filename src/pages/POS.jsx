@@ -1,47 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase/config"; // Pastikan config firebase sudah ada
-import { collection, getDocs, addDoc } from "firebase/firestore";
 import { auth } from "../firebase/config"; // Import auth
 import { getProducts, saveTransaction } from "../firebase/dataService";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 // import { printReceipt } from "../utils/printer";
-
-const sampleProducts = [
-  { id: 1, name: "tempe", price: 1000 },
-  { id: 2, name: "tahu", price: 2000 },
-  { id: 3, name: "sego", price: 3000 },
-  { id: 4, name: "tahu", price: 2000 },
-  { id: 5, name: "sego", price: 3000 },
-  { id: 6, name: "tahu", price: 2000 },
-  { id: 7, name: "sego", price: 3000 },
-];
+import { useUserClaims } from "../firebase/userClaims";
 
 const POS = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
 
   // Ambil ID User yang sedang login
   const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   useEffect(() => {
     const fetchMenu = async () => {
-      if (!userId) return; // Pastikan user ada
+      if (!claims?.merchantId) return; // Pastikan user ada
       try {
-        const data = await getProducts(userId); // Ambil data spesifik user ini
+        const data = await getProducts(claims?.merchantId); // Ambil data spesifik user ini
         setProducts(data);
       } catch (error) {
         console.error("Gagal ambil menu:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchMenu();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   // Hitung total setiap kali cart berubah
   useEffect(() => {
@@ -80,7 +67,7 @@ const POS = () => {
 
     try {
       const total = cart.reduce((a, b) => a + b.price * b.qty, 0);
-      await saveTransaction(userId, {
+      await saveTransaction(claims?.merchantId, userId, {
         items: cart,
         totalAmount: total,
         cashierEmail: auth.currentUser.email,

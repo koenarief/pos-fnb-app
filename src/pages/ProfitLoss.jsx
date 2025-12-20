@@ -3,10 +3,12 @@ import { auth } from '../firebase/config';
 import { getFinancialData } from '../firebase/dataService';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Loader2, PieChart } from 'lucide-react';
+import { useUserClaims } from "../firebase/userClaims";
 
 const ProfitLoss = () => {
   const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   const [data, setData] = useState({ income: 0, expense: 0, profit: 0 });
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const ProfitLoss = () => {
   useEffect(() => {
     const fetchFinancials = async () => {
       try {
-        const { transactions, expenses } = await getFinancialData(userId);
+        const { transactions, expenses } = await getFinancialData(claims?.merchantId);
         
         const totalIncome = transactions.reduce((sum, t) => sum + t.amount, 0);
         const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -31,7 +33,7 @@ const ProfitLoss = () => {
       }
     };
     fetchFinancials();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

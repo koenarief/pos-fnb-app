@@ -3,9 +3,9 @@ import { doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
 import { query, orderBy, limit } from 'firebase/firestore';
 
 // Ambil semua transaksi milik user
-export const getTransactions = async (userId) => {
-  if (!userId) return [];
-  const transCol = collection(db, 'users', userId, 'transactions');
+export const getTransactions = async (merchantId) => {
+  if (!merchantId) return [];
+  const transCol = collection(db, 'merchants', merchantId, 'transactions');
   // Urutkan berdasarkan waktu terbaru
   const q = query(transCol, orderBy('timestamp', 'desc'));
   const snapshot = await getDocs(q);
@@ -18,37 +18,42 @@ export const getTransactions = async (userId) => {
 };
 
 // Fungsi untuk mendapatkan referensi koleksi produk milik user tertentu
-const getProductCol = (userId) => collection(db, 'users', userId, 'products');
+const getProductCol = (merchantId) => {
+	return collection(db, 'merchants', merchantId, 'products');
+}
 
 // Ambil semua produk milik user yang login
-export const getProducts = async (userId) => {
-  if (!userId) return [];
-  const snapshot = await getDocs(getProductCol(userId));
+export const getProducts = async (merchantId) => {
+  if (!merchantId) return [];
+  const snapshot = await getDocs(getProductCol(merchantId));
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 // Tambah produk baru ke folder user tersebut
-export const addProduct = async (userId, productData) => {
+export const addProduct = async (merchantId, userId, productData) => {
   if (!userId) throw new Error("User ID tidak ditemukan");
-  const productCol = collection(db, 'users', userId, 'products');
+  const productCol = getProductCol(merchantId);
+
   return await addDoc(productCol, {
     ...productData,
+    userId: userId,
     price: Number(productData.price), // Pastikan harga adalah angka
     createdAt: serverTimestamp()
   });
 };
 // Fungsi untuk menyimpan transaksi (juga di folder user)
-export const saveTransaction = async (userId, transactionData) => {
-  const transCol = collection(db, 'users', userId, 'transactions');
+export const saveTransaction = async (merchantId, userId, transactionData) => {
+  const transCol = collection(db, 'merchants', merchantId, 'transactions');
   return await addDoc(transCol, {
     ...transactionData,
+    userId: userId,
     timestamp: serverTimestamp()
   });
 };
 
 // Update Produk
-export const updateProduct = async (userId, productId, updatedData) => {
-  const productRef = doc(db, 'users', userId, 'products', productId);
+export const updateProduct = async (merchantId, productId, updatedData) => {
+  const productRef = doc(db, 'merchants', merchantId, 'products', productId);
   return await updateDoc(productRef, {
     ...updatedData,
     price: Number(updatedData.price)
@@ -56,32 +61,33 @@ export const updateProduct = async (userId, productId, updatedData) => {
 };
 
 // Hapus Produk
-export const deleteProduct = async (userId, productId) => {
-  const productRef = doc(db, 'users', userId, 'products', productId);
+export const deleteProduct = async (merchantId, productId) => {
+  const productRef = doc(db, 'merchants', merchantId, 'products', productId);
   return await deleteDoc(productRef);
 };
 
 // Tambah Pengeluaran
-export const addExpense = async (userId, expenseData) => {
-  const colRef = collection(db, 'users', userId, 'expenses');
+export const addExpense = async (merchantId, userId, expenseData) => {
+  const colRef = collection(db, 'merchants', merchantId, 'expenses');
   return await addDoc(colRef, {
     ...expenseData,
+    userId: userId,
     amount: Number(expenseData.amount),
     date: serverTimestamp()
   });
 };
 
 // Ambil List Pengeluaran
-export const getExpenses = async (userId) => {
-  const colRef = collection(db, 'users', userId, 'expenses');
+export const getExpenses = async (merchantId, userId) => {
+  const colRef = collection(db, 'merchants', merchantId, 'expenses');
   const q = query(colRef, orderBy('date', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 // Helper untuk ambil data koleksi apapun milik user
-const getDataByUserId = async (userId, collectionName) => {
-  const colRef = collection(db, 'users', userId, collectionName);
+const getDataByMerchantId = async (merchantId, collectionName) => {
+  const colRef = collection(db, 'merchants', merchantId, collectionName);
   const q = query(colRef, orderBy(collectionName === 'transactions' ? 'timestamp' : 'date', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ 
@@ -91,24 +97,39 @@ const getDataByUserId = async (userId, collectionName) => {
   }));
 };
 
-export const getFinancialData = async (userId) => {
+export const getFinancialData = async (merchantId) => {
   const [transactions, expenses] = await Promise.all([
-    getDataByUserId(userId, 'transactions'),
-    getDataByUserId(userId, 'expenses')
+    getDataByMerchantId(merchantId, 'transactions'),
+    getDataByMerchantId(merchantId, 'expenses')
   ]);
   return { transactions, expenses };
 };
 
 // Mendapatkan data profil merchant
-export const getMerchantProfile = async (userId) => {
-  if (!userId) return null;
-  const docRef = doc(db, 'users', userId, 'settings', 'merchantProfile');
+export const getMerchantProfile = async (merchantId) => {
+  if (!merchantId) return null;
+  const docRef = doc(db, 'merchants', merchantId, 'settings', 'merchantProfile');
   const docSnap = await getDoc(docRef);
   return docSnap.exists() ? docSnap.data() : null;
 };
 
 // Menyimpan atau mengupdate profil merchant
-export const saveMerchantProfile = async (userId, profileData) => {
-  const docRef = doc(db, 'users', userId, 'settings', 'merchantProfile');
+export const saveMerchantProfile = async (merchantId, profileData) => {
+  const docRef = doc(db, 'merchants', merchantId , 'settings', 'merchantProfile');
   return await setDoc(docRef, profileData, { merge: true });
 };
+
+// Mendapatkan data profil user
+export const getUserProfile = async (userId) => {
+  if (!userId) return null;
+  const docRef = doc(db, 'users', userId, 'settings', 'profile');
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? docSnap.data() : null;
+};
+
+// Menyimpan atau mengupdate profil user
+export const saveUserProfile = async (userId, profileData) => {
+  const docRef = doc(db, 'users', userId, 'settings', 'rofile');
+  return await setDoc(docRef, profileData, { merge: true });
+};
+

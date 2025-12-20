@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config';
 import { getMerchantProfile, saveMerchantProfile } from '../firebase/dataService';
 import { ArrowLeft, Store, MapPin, Phone, Save, Loader2, CheckCircle } from 'lucide-react';
+import { useUserClaims } from "../firebase/userClaims";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [success, setSuccess] = useState(false);
+  const userId = auth.currentUser?.uid;
+
   const [formData, setFormData] = useState({
     merchantName: '',
     address: '',
@@ -20,18 +23,18 @@ const Settings = () => {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const profile = await getMerchantProfile(userId);
+      const profile = await getMerchantProfile(claims?.merchantId);
       if (profile) setFormData(profile);
       setFetching(false);
     };
     loadProfile();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await saveMerchantProfile(userId, formData);
+      await saveMerchantProfile(claims?.merchantId, formData);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {

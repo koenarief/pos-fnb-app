@@ -3,6 +3,7 @@ import { auth } from '../firebase/config';
 import { getTransactions } from '../firebase/dataService';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, ShoppingBag, Calendar, Loader2 } from 'lucide-react';
+import { useUserClaims } from "../firebase/userClaims";
 
 const Reports = () => {
   const navigate = useNavigate();
@@ -10,11 +11,12 @@ const Reports = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalRevenue: 0, totalSales: 0 });
+  const claims = useUserClaims();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getTransactions(userId);
+        const data = await getTransactions(claims?.merchantId);
         setTransactions(data);
         
         // Hitung statistik sederhana
@@ -30,7 +32,7 @@ const Reports = () => {
       }
     };
     fetchData();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">

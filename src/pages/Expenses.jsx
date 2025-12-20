@@ -4,10 +4,12 @@ import { addExpense, getExpenses } from '../firebase/dataService';
 import { ArrowLeft, Plus, Receipt, Wallet, Loader2, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { useUserClaims } from "../firebase/userClaims";
 
 const Expenses = () => {
   const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -16,10 +18,10 @@ const Expenses = () => {
 
   useEffect(() => {
     fetchData();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   const fetchData = async () => {
-    const data = await getExpenses(userId);
+    const data = await getExpenses(claims?.merchantId);
     setExpenses(data);
     setIsFetching(false);
   };
@@ -28,7 +30,7 @@ const Expenses = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await addExpense(userId, form);
+      await addExpense( claims?.merchantId, userId, form);
       setForm({ title: '', amount: '', category: 'Bahan Baku' });
       fetchData(); // Refresh list
     } catch (error) {

@@ -15,6 +15,8 @@ import { toast } from "react-toastify";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { getMerchantProfile } from '../firebase/dataService'; // Pastikan fungsi ini sudah di-export di dataService
 
+import { useUserClaims } from "../firebase/userClaims";
+
 const menuItems = [
   { 
     title: 'Kasir / POS', 
@@ -59,14 +61,14 @@ const Home = () => {
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [openLogout, setOpenLogout] = React.useState(false);
   const [merchantName, setMerchantName] = useState('Caffè POS'); // Nama default
-  const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   // Ambil data merchant saat halaman dimuat
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!userId) return;
+      if (!claims?.merchantId) return;
       try {
-        const profile = await getMerchantProfile(userId);
+        const profile = await getMerchantProfile(claims?.merchantId);
         if (profile && profile.merchantName) {
           setMerchantName(profile.merchantName);
         }
@@ -75,7 +77,7 @@ const Home = () => {
       }
     };
     fetchProfile();
-  }, [userId]);
+  }, [claims?.merchantId]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -91,13 +93,12 @@ const Home = () => {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b px-8 py-6 flex justify-between items-center shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{merchantName}</h1>
-          <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email}</p>
+          <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email} Role: {claims?.role} {claims?.merchantId}</p>
         </div>
         
         <button 

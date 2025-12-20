@@ -5,10 +5,12 @@ import { addProduct } from '../firebase/dataService';
 import { ArrowLeft, Save, Package, Tag, Layers, Image as ImageIcon, Loader2 } from 'lucide-react';
 import ImageUploader from "../components/ImageUploader";
 import { toast } from "react-toastify";
+import { useUserClaims } from "../firebase/userClaims";
 
 const AddMenu = () => {
   const navigate = useNavigate();
   const userId = auth.currentUser?.uid;
+  const claims = useUserClaims();
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,7 +25,7 @@ const AddMenu = () => {
     setLoading(true);
 
     try {
-      await addProduct(userId, formData);
+      await addProduct(claims?.merchantId, userId, formData);
       toast("Produk berhasil ditambahkan!");
       navigate('/pos'); // Kembali ke POS setelah berhasil
     } catch (error) {
