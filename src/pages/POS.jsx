@@ -8,13 +8,14 @@ import { toast } from "react-toastify";
 import { useUserClaims } from "../firebase/userClaims";
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, clearCart } from '../store/cartSlice';
+import { fetchProducts } from '../store/productSlice';
 
 const POS = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
 
   const dispatch = useDispatch();
   // Ambil data dari Redux Store
+  const { items: products, loading } = useSelector((state) => state.products);
   const cartItems = useSelector((state) => state.cart.items);
   const totalAmount = useSelector((state) => state.cart.totalAmount);
 
@@ -23,24 +24,31 @@ const POS = () => {
   const claims = useUserClaims();
 
   useEffect(() => {
-    const fetchMenu = async () => {
-      if (!claims?.merchantId) return; // Pastikan user ada
-      try {
-        const data = await getProducts(claims?.merchantId); // Ambil data spesifik user ini
-        const serializedData = data.map(product => ({
-          ...product,
-          createdAt: product.createdAt?.seconds 
-            ? product.createdAt.toMillis() // Ubah ke milidetik
-            : Date.now()
-        }));
+    // Hanya fetch jika data produk masih kosong
+    if (products.length === 0 && claims?.merchantId) {
+      dispatch(fetchProducts(claims?.merchantId));
+    }
+  }, [claims?.merchantId, dispatch, products.length]);
 
-        setProducts(serializedData);
-      } catch (error) {
-        console.error("Gagal ambil menu:", error);
-      }
-    };
-    fetchMenu();
-  }, [claims?.merchantId]);
+  // useEffect(() => {
+  //   const fetchMenu = async () => {
+  //     if (!claims?.merchantId) return; // Pastikan user ada
+  //     try {
+  //       const data = await getProducts(claims?.merchantId); // Ambil data spesifik user ini
+  //       const serializedData = data.map(product => ({
+  //         ...product,
+  //         createdAt: product.createdAt?.seconds 
+  //           ? product.createdAt.toMillis() // Ubah ke milidetik
+  //           : Date.now()
+  //       }));
+
+  //       setProducts(serializedData);
+  //     } catch (error) {
+  //       console.error("Gagal ambil menu:", error);
+  //     }
+  //   };
+  //   fetchMenu();
+  // }, [claims?.merchantId]);
 
 
   const handleCheckout = async () => {
@@ -67,6 +75,12 @@ const POS = () => {
     }
   };
 
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center">
+      <Loader2 className="animate-spin text-blue-600" size={40} />
+    </div>
+  );
+  
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Header POS - Tetap di atas */}
