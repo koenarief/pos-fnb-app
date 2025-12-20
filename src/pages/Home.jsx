@@ -13,9 +13,10 @@ import {
 } from 'lucide-react';
 import { toast } from "react-toastify";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { getMerchantProfile } from '../firebase/dataService'; // Pastikan fungsi ini sudah di-export di dataService
 
 import { useUserClaims } from "../firebase/userClaims";
+import { fetchMerchantProfile } from '../store/merchantSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const menuItems = [
   { 
@@ -60,24 +61,15 @@ const Home = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [openLogout, setOpenLogout] = React.useState(false);
-  const [merchantName, setMerchantName] = useState('Caffè POS'); // Nama default
   const claims = useUserClaims();
+  const dispatch = useDispatch();
+  const { profile, loading } = useSelector((state) => state.merchant);
 
-  // Ambil data merchant saat halaman dimuat
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!claims?.merchantId) return;
-      try {
-        const profile = await getMerchantProfile(claims?.merchantId);
-        if (profile && profile.merchantName) {
-          setMerchantName(profile.merchantName);
-        }
-      } catch (error) {
-        console.error("Gagal mengambil nama merchant:", error);
-      }
-    };
-    fetchProfile();
-  }, [claims?.merchantId]);
+    if (claims?.merchantId) {
+      dispatch(fetchMerchantProfile(claims?.merchantId));
+    }
+  }, [claims?.merchantId, dispatch]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -97,8 +89,8 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b px-8 py-6 flex justify-between items-center shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{merchantName}</h1>
-          <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email} Role: {claims?.role} {claims?.merchantId}</p>
+          <h1 className="text-2xl font-bold text-gray-800">{profile?.merchantName || 'Caffè POS'}</h1>
+          <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email}</p>
         </div>
         
         <button 
