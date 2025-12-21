@@ -6,9 +6,12 @@ import { ArrowLeft, Save, Package, Tag, Layers, Image as ImageIcon, Loader2 } fr
 import ImageUploader from "../components/ImageUploader";
 import { toast } from "react-toastify";
 import { useUserClaims } from "../firebase/userClaims";
+import { useDispatch } from 'react-redux';
+import { fetchProducts } from '../store/productSlice';
 
 const AddMenu = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userId = auth.currentUser?.uid;
   const claims = useUserClaims();
 
@@ -27,7 +30,8 @@ const AddMenu = () => {
     try {
       await addProduct(claims?.merchantId, userId, formData);
       toast("Produk berhasil ditambahkan!");
-      navigate('/pos'); // Kembali ke POS setelah berhasil
+	  dispatch(fetchProducts(claims?.merchantId));
+      navigate('/menu/manage');
     } catch (error) {
       console.error(error);
       toast("Gagal menambahkan produk.");

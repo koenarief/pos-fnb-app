@@ -19,9 +19,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUserClaims } from "../firebase/userClaims";
+import { useDispatch } from 'react-redux';
+import { fetchProducts } from '../store/productSlice';
 
 const ManageMenu = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userId = auth.currentUser?.uid;
   const claims = useUserClaims();
 
@@ -44,6 +47,7 @@ const ManageMenu = () => {
     const data = await getProducts(claims?.merchantId);
     setProducts(data);
     setLoading(false);
+    dispatch(fetchProducts(claims?.merchantId));
   };
 
   const handleEditClick = (product) => {

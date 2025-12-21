@@ -26,7 +26,15 @@ const getProductCol = (merchantId) => {
 export const getProducts = async (merchantId) => {
   if (!merchantId) return [];
   const snapshot = await getDocs(getProductCol(merchantId));
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+  return products.sort((a, b) => {
+    if (a.category < b.category) return -1;
+    if (a.category > b.category) return 1;
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
 };
 
 // Tambah produk baru ke folder user tersebut
@@ -75,8 +83,8 @@ export const copyProduct = async (merchantId, productId) => {
     const updatedData = productDoc.data();
     delete updatedData.id; // hapus id asli untuk membuat dokumen baru
     
-    const newProductRef = collection(db, 'merchants', merchantId, 'products');
-    return await addDoc(newProductRef, {
+    const colRef = collection(db, 'merchants', merchantId, 'products');
+    return await addDoc(colRef, {
       ...updatedData,
       price: Number(updatedData.price)
     });
