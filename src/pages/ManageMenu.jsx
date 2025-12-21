@@ -4,6 +4,7 @@ import {
   getProducts,
   updateProduct,
   deleteProduct,
+  copyProduct,
 } from "../firebase/dataService";
 import {
   ArrowLeft,
@@ -11,6 +12,7 @@ import {
   Trash2,
   Save,
   X,
+  Copy,
   Loader2,
   Search,
 } from "lucide-react";
@@ -73,6 +75,15 @@ const ManageMenu = () => {
       } catch (error) {
         toast("Gagal menghapus produk");
       }
+    }
+  };
+
+  const handleCopy = async (id) => {
+    try {
+      await copyProduct(claims?.merchantId, id);
+      fetchData();
+    } catch (error) {
+      toast("Gagal copy produk");
     }
   };
 
@@ -197,6 +208,12 @@ const ManageMenu = () => {
                               className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
                             >
                               <Trash2 size={18} />
+                            </button>
+                            <button
+                              onClick={() => handleCopy(product.id)}
+                              className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100"
+                            >
+                              <Copy size={18} />
                             </button>
                           </>
                         )}

@@ -18,6 +18,7 @@ const POS = () => {
   const { items: products, loading } = useSelector((state) => state.products);
   const cartItems = useSelector((state) => state.cart.items);
   const totalAmount = useSelector((state) => state.cart.totalAmount);
+  const { profile } = useSelector((state) => state.merchant);
 
   // Ambil ID User yang sedang login
   const userId = auth.currentUser?.uid;
@@ -29,27 +30,6 @@ const POS = () => {
       dispatch(fetchProducts(claims?.merchantId));
     }
   }, [claims?.merchantId, dispatch, products.length]);
-
-  // useEffect(() => {
-  //   const fetchMenu = async () => {
-  //     if (!claims?.merchantId) return; // Pastikan user ada
-  //     try {
-  //       const data = await getProducts(claims?.merchantId); // Ambil data spesifik user ini
-  //       const serializedData = data.map(product => ({
-  //         ...product,
-  //         createdAt: product.createdAt?.seconds 
-  //           ? product.createdAt.toMillis() // Ubah ke milidetik
-  //           : Date.now()
-  //       }));
-
-  //       setProducts(serializedData);
-  //     } catch (error) {
-  //       console.error("Gagal ambil menu:", error);
-  //     }
-  //   };
-  //   fetchMenu();
-  // }, [claims?.merchantId]);
-
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) return toast("Keranjang kosong!");
@@ -63,7 +43,7 @@ const POS = () => {
       toast("Transaksi Tersimpan di Database Anda!");
       dispatch(clearCart());
 
-      // const isSuccess = await printReceipt("CAFÉ DIGITAL", cart, total);
+      // const isSuccess = await printReceipt(profile?.merchantName, cart, total);
 
       // if (isSuccess) {
       // toast("Transaksi Selesai & Struk Dicetak!");
@@ -91,21 +71,21 @@ const POS = () => {
         >
           <ArrowLeft />
         </button>
-        <h2 className="text-xl font-bold">Menu Transaksi</h2>
+        <h2 className="text-xl font-bold">Transaksi {profile?.merchantName}</h2>
       </div>
 
       {/* Container Utama: flex-col (HP), flex-row (Desktop) */}
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* SISI ATAS (HP) / SISI KIRI (Desktop): Daftar Produk */}
-        <div className="flex-1 p-4 overflow-y-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="flex-1 p-4 overflow-y-auto grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {products.map((product) => (
             <div
               key={product.id}
               onClick={() => dispatch(addToCart(product))}
-              className="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col md:max-h-48"
+              className="bg-white p-3 sm:p-0 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col md:max-h-48 xl:max-h-72 overflow-hidden"
             >
               {product.image && (
-                <div className="aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                <div className="bg-gray-200 mb-2 overflow-hidden">
                   <img
                     src={product.image}
                     className="w-full h-full object-cover"
@@ -113,10 +93,10 @@ const POS = () => {
                   />
                 </div>
               )}
-              <h3 className="font-semibold text-gray-700 text-sm md:text-base line-clamp-1">
+              <h3 className="font-semibold text-gray-700 text-sm md:text-base px-2">
                 {product.name}
               </h3>
-              <p className="text-blue-600 font-bold text-sm md:text-lg">
+              <p className="text-blue-600 font-bold text-sm md:text-lg px-2">
                 Rp {product.price.toLocaleString()}
               </p>
             </div>

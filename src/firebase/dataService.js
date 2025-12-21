@@ -66,6 +66,26 @@ export const deleteProduct = async (merchantId, productId) => {
   return await deleteDoc(productRef);
 };
 
+// Copy Produk
+export const copyProduct = async (merchantId, productId) => {
+  const productRef = doc(db, 'merchants', merchantId, 'products', productId);
+  const productDoc = await getDoc(productRef);
+
+  if (productDoc.exists()) {
+    const updatedData = productDoc.data();
+    delete updatedData.id; // hapus id asli untuk membuat dokumen baru
+    
+    const newProductRef = collection(db, 'merchants', merchantId, 'products');
+    return await addDoc(newProductRef, {
+      ...updatedData,
+      price: Number(updatedData.price)
+    });
+  } else {
+    throw new Error('Produk tidak ditemukan');
+  }
+
+};
+
 // Tambah Pengeluaran
 export const addExpense = async (merchantId, userId, expenseData) => {
   const colRef = collection(db, 'merchants', merchantId, 'expenses');
