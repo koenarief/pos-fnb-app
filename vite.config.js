@@ -7,22 +7,17 @@ import { VitePWA } from "vite-plugin-pwa"; // Impor plugin
 export default defineConfig({
   build: {
     // Mengatur batas peringatan ukuran chunk menjadi 1000 kB (1MB).
-    // Nilai default-nya adalah 500.
     chunkSizeWarningLimit: 1000,
-
-    // Opsi tambahan untuk memastikan kode di-split dengan baik:
-    // Contoh untuk menonaktifkan code splitting saat di build (tidak disarankan)
-    // cssCodeSplit: false,
   },
   plugins: [
-	  react(),
-	  tailwindcss(),
+	react(),
+	tailwindcss(),
     VitePWA({
       registerType: "autoUpdate", // Mengatur bagaimana Service Worker didaftarkan dan diperbarui
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"], // Aset statis yang akan di-cache
       manifest: {
-        name: "ID Kasir",
-        short_name: "ID Kasir",
+        name: "DeKasir",
+        short_name: "DeKasir",
         description: "Aplikasi untuk input data penjualan",
         theme_color: "#ffffff",
         icons: [
