@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../firebase/config"; // Import auth
-import { getProducts, saveTransaction } from "../firebase/dataService";
+import {  saveTransaction } from "../firebase/dataService";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "react-toastify";
 // import { printReceipt } from "../utils/printer";
 import { useUserClaims } from "../firebase/userClaims";
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, clearCart } from '../store/cartSlice';
 import { fetchProducts } from '../store/productSlice';
+import { fetchMerchantProfile } from '../store/merchantSlice';
 
 const POS = () => {
   const navigate = useNavigate();
@@ -24,12 +25,37 @@ const POS = () => {
   const userId = auth.currentUser?.uid;
   const claims = useUserClaims();
 
+  const categories = ['Semua', 'Makanan', 'Minuman', 'Snack', 'Lainnya'];
+
   useEffect(() => {
     // Hanya fetch jika data produk masih kosong
     if (products.length === 0 && claims?.merchantId) {
       dispatch(fetchProducts(claims?.merchantId));
     }
   }, [claims?.merchantId, dispatch, products.length]);
+
+  useEffect(() => {
+      if (claims?.merchantId) {
+        dispatch(fetchMerchantProfile(claims?.merchantId));
+      }
+    }, [claims?.merchantId, dispatch]);
+
+  // 1. Fungsi untuk mengelompokkan produk berdasarkan kategori
+  const groupedProducts = categories.reduce((acc, category) => {
+    // Filter produk yang sesuai dengan kategori saat ini
+    const filtered = products.filter(p => 
+      category === 'Lainnya' 
+        ? (!p.category || p.category === 'Lainnya') // Handle jika kategori kosong
+        : p.category === category
+    );
+    
+    // Jangan masukkan kategori ke list jika tidak ada produknya (opsional)
+    if (filtered.length > 0 && category !== 'Semua') {
+      acc.push({ category, items: filtered });
+    }
+    return acc;
+  }, []);
+
 
   const handleCheckout = async () => {
     if (cartItems.length === 0) return toast("Keranjang kosong!");
@@ -75,32 +101,67 @@ const POS = () => {
       </div>
 
       {/* Container Utama: flex-col (HP), flex-row (Desktop) */}
+        
+
+
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* SISI ATAS (HP) / SISI KIRI (Desktop): Daftar Produk */}
-        <div className="flex-1 p-4 overflow-y-auto grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => dispatch(addToCart(product))}
-              className="bg-white p-3 sm:p-0 rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col md:max-h-48 xl:max-h-72 overflow-hidden"
-            >
-              {product.image && (
-                <div className="bg-gray-200 mb-2 overflow-hidden">
-                  <img
-                    src={product.image}
-                    className="w-full h-full object-cover"
-                    alt={product.name}
-                  />
+        <div className="flex-1 p-4 overflow-y-auto space-y-8 custom-scrollbar">
+          {groupedProducts.length > 0 ? (
+            groupedProducts.map(({ category, items }) => (
+              <div key={category} className="space-y-4">
+                {/* Header Kategori */}
+                <div className="flex items-center gap-4">
+                  <h3 className="text-lg font-bold text-gray-400 sticky top-0 bg-gray-100 py-1 z-10">
+                    {category}
+                  </h3>
+                  <div className="h-[2px] flex-1 bg-gray-200"></div>
                 </div>
-              )}
-              <h3 className="font-semibold text-gray-700 text-sm md:text-base px-2">
-                {product.name}
-              </h3>
-              <p className="text-blue-600 font-bold text-sm md:text-lg px-2">
-                Rp {product.price.toLocaleString()}
-              </p>
-            </div>
-          ))}
+
+                {/* Grid Produk dalam Kategori ini */}
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {items.map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => dispatch(addToCart(product))}
+                      className="bg-white rounded-xl shadow-sm border border-transparent active:border-blue-500 cursor-pointer hover:shadow-md transition flex flex-col overflow-hidden"
+                    >
+                      {product.image && (
+                        <div className="h-32 bg-gray-200">
+                          <img
+                            src={product.image}
+                            className="w-full h-full object-cover"
+                            alt={product.name}
+                          />
+                        </div>
+                      )}
+                      <div className="p-3">
+                        <h4 className="font-semibold text-gray-700 text-sm truncate">
+                          {product.name}
+                        </h4>
+                        <p className="text-blue-600 font-bold text-sm">
+                          Rp {product.price.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-20 text-gray-400">Belum ada produk.</div>
+          )}
+
+          {/* 2. Tombol Tambah Menu (Di akhir scroll daftar produk) */}
+          <div className="pt-6">
+            <button
+              onClick={() => navigate("/menu/add")} // Sesuaikan path route tambah produk Anda
+              className="cursor-pointer mb-8 min-w-48 py-4 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center gap-2 text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-all bg-white/50"
+            >
+              <Plus size={20} />
+              <span className="font-medium">Tambah Produk</span>
+            </button>
+          </div>
         </div>
 
         {/* SISI BAWAH (HP) / SISI KANAN (Desktop): Detail Pesanan */}

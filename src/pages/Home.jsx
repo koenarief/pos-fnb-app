@@ -89,7 +89,7 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b px-8 py-6 flex justify-between items-center shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{profile?.merchantName || 'Caffè POS'}</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{profile?.merchantName || 'DeKasir'}</h1>
           <p className="text-gray-500 text-sm italic">User: {auth.currentUser?.email}</p>
         </div>
         

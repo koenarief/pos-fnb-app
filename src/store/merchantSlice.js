@@ -7,7 +7,7 @@ export const fetchMerchantProfile = createAsyncThunk(
   async (merchantId, { rejectWithValue }) => {
     try {
       const data = await getMerchantProfile(merchantId);
-      return data || { merchantName: 'Caffè POS', address: '', phone: '' };
+      return data || { merchantName: 'DeKasir', address: '', phone: '' };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -18,7 +18,7 @@ const merchantSlice = createSlice({
   name: 'merchant',
   initialState: {
     profile: {
-      merchantName: 'Caffè POS',
+      merchantName: 'DeKasir',
       address: '',
       phone: '',
     },
