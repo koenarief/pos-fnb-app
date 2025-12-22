@@ -30,8 +30,14 @@ const AddMenu = () => {
     try {
       await addProduct(claims?.merchantId, userId, formData);
       toast("Produk berhasil ditambahkan!");
-	  dispatch(fetchProducts(claims?.merchantId));
-      navigate('/menu/manage');
+	    dispatch(fetchProducts(claims?.merchantId));
+      setFormData({
+        name: '',
+        price: '',
+        category: 'Minuman',
+        image: ''
+      });
+      // navigate('/menu/manage');
     } catch (error) {
       console.error(error);
       toast("Gagal menambahkan produk.");
@@ -44,7 +50,7 @@ const AddMenu = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-full transition">
+        <button onClick={() => navigate('/menu/manage')} className="p-2 hover:bg-gray-100 rounded-full transition">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold text-gray-800">Tambah Menu Baru</h1>
@@ -69,6 +75,8 @@ const AddMenu = () => {
                 />
               </div>
             </div>
+
+            
 
             <div className="grid grid-cols-2 gap-4">
               {/* Input Harga */}
@@ -106,9 +114,23 @@ const AddMenu = () => {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Image</label>
+              <div className="relative">
+                <ImageIcon className="absolute left-3 top-3 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  required
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Contoh: https://domain.com/image.jpg"
+                  value={formData.image}
+                  onChange={(e) => setFormData({...formData, image: e.target.value})}
+                />
+              </div>
+            </div>
+
             {/* Input URL Gambar */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">URL Gambar (Opsional)</label>
               <div className="relative">
                 <ImageUploader
                   setImageUrl={(image) => setFormData({...formData, image: image})}

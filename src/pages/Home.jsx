@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config'; // Pastikan path config benar
 import { signOut } from 'firebase/auth';
@@ -51,16 +51,16 @@ const menuItems = [
   },
   { 
     title: 'Setting', 
-    icon: <Settings size={40} />, // Calculator melambangkan perhitungan profit bersih
-    color: 'bg-slate-700', 
+    icon: <Settings size={40} />,
+    color: 'bg-zinc-500', 
     path: '/settings' 
   },
 ];
 
 const Home = () => {
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
-  const [openLogout, setOpenLogout] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [openLogout, setOpenLogout] = useState(false);
   const claims = useUserClaims();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.merchant);
