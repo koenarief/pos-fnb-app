@@ -67,9 +67,8 @@ const POS = () => {
         cashierEmail: auth.currentUser.email,
       });
       toast("Transaksi Tersimpan di Database Anda!");
-      dispatch(clearCart());
 
-      printReceipt(profile?.merchantName, cart, total);
+      await printReceipt(profile?.merchantName, cartItems, totalAmount);
       // const isSuccess = await printReceipt(profile?.merchantName, cart, total);
 
       // if (isSuccess) {
@@ -78,7 +77,9 @@ const POS = () => {
       // }
     } catch (error) {
       console.error("Gagal simpan transaksi:", error);
-      toast("Gagal simpan transaksi");
+      toast(`Ada error: ${error.message}`);
+    } finally {
+      dispatch(clearCart());
     }
   };
 
