@@ -4,7 +4,7 @@ import {  saveTransaction } from "../firebase/dataService";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "react-toastify";
-// import { printReceipt } from "../utils/printer";
+import { printReceipt } from "../utils/printer";
 import { useUserClaims } from "../firebase/userClaims";
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, clearCart } from '../store/cartSlice';
@@ -69,6 +69,7 @@ const POS = () => {
       toast("Transaksi Tersimpan di Database Anda!");
       dispatch(clearCart());
 
+      printReceipt(profile?.merchantName, cart, total);
       // const isSuccess = await printReceipt(profile?.merchantName, cart, total);
 
       // if (isSuccess) {
