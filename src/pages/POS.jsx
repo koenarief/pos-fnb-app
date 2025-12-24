@@ -166,20 +166,21 @@ const POS = () => {
           </div>
         </div>
 
-        {/* SISI BAWAH (HP) / SISI KANAN (Desktop): Detail Pesanan */}
-        {/* h-[40vh] memberikan tinggi tetap di HP agar scrollable aktif */}
-        <div className="w-full md:w-80 bg-white border-t md:border-t-0 md:border-l flex flex-col shrink-0 h-[45vh] md:h-full shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none">
-          <div className="p-4 border-b shrink-0 flex justify-between items-center">
-            <h3 className="font-bold text-gray-800">Detail Pesanan</h3>
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500 italic">
-              Tap item untuk hapus
-            </span>
-          </div>
 
-          {/* Area Item Pesanan - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-            {cartItems.length > 0 ? (
-              cartItems.map((item) => (
+        {/* SISI BAWAH (HP) / SISI KANAN (Desktop): Detail Pesanan */}
+        {/* Menambahkan kondisi: (cartItems.length > 0) || (Layar Desktop / md:) */}
+        {(cartItems.length > 0) && (
+          <div className="w-full md:w-80 bg-white border-t md:border-t-0 md:border-l flex flex-col shrink-0 h-[45vh] md:h-full shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none">
+            <div className="p-4 border-b shrink-0 flex justify-between items-center">
+              <h3 className="font-bold text-gray-800">Detail Pesanan</h3>
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500 italic">
+                Tap item untuk hapus
+              </span>
+            </div>
+
+            {/* Area Item Pesanan - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+              {cartItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-center group active:bg-red-50 p-1 rounded transition"
@@ -195,32 +196,30 @@ const POS = () => {
                     Rp {(item.price * item.qty).toLocaleString()}
                   </p>
                 </div>
-              ))
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400 text-sm italic">
-                Keranjang kosong
-              </div>
-            )}
-          </div>
-
-          {/* Ringkasan Total & Tombol Bayar - Sticky di paling bawah */}
-          <div className="p-4 bg-gray-50 border-t mt-auto shrink-0">
-            <div className="flex justify-between mb-4">
-              <span className="text-gray-500 font-medium">Total</span>
-              <span className="text-2xl font-black text-blue-600">
-                Rp {totalAmount.toLocaleString()}
-              </span>
+              ))}
             </div>
-            {totalAmount > 0 && (
+
+            {/* Ringkasan Total & Tombol Bayar */}
+            <div className="p-4 bg-gray-50 border-t mt-auto shrink-0">
+              <div className="flex justify-between mb-4">
+                <span className="text-gray-500 font-medium">Total</span>
+                <span className="text-2xl font-black text-blue-600">
+                  Rp {totalAmount.toLocaleString()}
+                </span>
+              </div>
               <button
                 onClick={handleCheckout}
                 className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-transform"
               >
                 BAYAR
               </button>
-            )}
+            </div>
           </div>
-        </div>
+        )}
+
+
+
+
       </div>
     </div>
   );
