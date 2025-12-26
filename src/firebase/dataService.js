@@ -161,3 +161,12 @@ export const saveUserProfile = async (userId, profileData) => {
   return await setDoc(docRef, profileData, { merge: true });
 };
 
+export const initializeMerchant = async (userId, merchantName) => {
+  const docRef = doc(db, 'users', userId, 'settings', 'merchantProfile');
+  return await setDoc(docRef, {
+    merchantName: merchantName,
+    address: '',
+    phone: '',
+    createdAt: new Date()
+  });
+};

@@ -17,6 +17,7 @@ import Reports from "./pages/Reports";
 import Expenses from "./pages/Expenses";
 import ProfitLoss from "./pages/ProfitLoss";
 import Settings from './pages/Settings';
+import Register from './pages/Register';
 import { ToastContainer } from "react-toastify";
 
 // Komponen sederhana untuk halaman lain yang belum dibuat
@@ -53,6 +54,10 @@ function App() {
           <Route
             path="/login"
             element={!user ? <Login /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/daftar-merchant"
+            element={!user ? <Register /> : <Navigate to="/" />}
           />
           <Route
             path="/"

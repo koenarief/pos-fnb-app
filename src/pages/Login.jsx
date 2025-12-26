@@ -86,6 +86,13 @@ const Login = () => {
             >
               {loading ? <Loader2 className="animate-spin" /> : 'Masuk ke Sistem'}
             </button>
+            <button
+              type="button"
+              onClick={() => navigate('/daftar-merchant')}
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-4 rounded-xl shadow-lg shadow-gray-200 transition-all flex items-center justify-center gap-2"
+            >
+              Daftar Merchant Baru
+            </button>
           </form>
         </div>
         
