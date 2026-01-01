@@ -2,15 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase/config'; // Pastikan path config benar
 import { signOut } from 'firebase/auth';
-import { 
-  Loader2,
-  ShoppingCart, 
-  Wallet, 
-  BarChart3, 
-  Utensils, 
-  Calculator, 
-  LogOut, Settings
-} from 'lucide-react';
 import { toast } from "react-toastify";
 import ConfirmDialog from "../components/ConfirmDialog";
 
@@ -18,47 +9,66 @@ import { useUserClaims } from "../firebase/userClaims";
 import { fetchMerchantProfile } from '../store/merchantSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { 
+  Loader2,
+  LogOut,
+  ShoppingCart, 
+  Receipt, 
+  PieChart, 
+  CalendarDays, 
+  BarChart3, 
+  UtensilsCrossed, 
+  Scale, 
+  Settings2 
+} from 'lucide-react';
+
 const menuItems = [
   { 
     title: 'Kasir / POS', 
     icon: <ShoppingCart size={40} />, 
-    color: 'bg-blue-600', 
+    color: 'bg-indigo-600', // Indigo memberikan kesan profesional & terpercaya
     path: '/pos' 
   },
   { 
     title: 'Biaya', 
-    icon: <Wallet size={40} />, // Wallet lebih cocok untuk pengeluaran/biaya
-    color: 'bg-orange-500', 
+    icon: <Receipt size={40} />, // Receipt lebih spesifik untuk bukti pengeluaran
+    color: 'bg-rose-500', // Merah/Rose identik dengan arus kas keluar (biaya)
     path: '/expenses' 
   },
   { 
-    title: 'Laporan', 
-    icon: <BarChart3 size={40} />, // BarChart3 mencerminkan grafik data penjualan
-    color: 'bg-emerald-500', 
+    title: 'Laporan Penjualan', 
+    icon: <PieChart size={40} />, // PieChart untuk ringkasan (overview)
+    color: 'bg-cyan-500', 
     path: '/reports' 
   },
   { 
     title: 'Laporan Harian', 
-    icon: <BarChart3 size={40} />, // BarChart3 mencerminkan grafik data penjualan
+    icon: <CalendarDays size={40} />, // Ikon kalender untuk pencatatan harian
     color: 'bg-emerald-500', 
     path: '/reports-by-date' 
   },
   { 
+    title: 'Laporan Per Bulan', 
+    icon: <BarChart3 size={40} />, // Grafik batang untuk tren bulanan
+    color: 'bg-teal-600', 
+    path: '/reports-by-month' 
+  },
+  { 
     title: 'Manajemen Menu', 
-    icon: <Utensils size={40} />, // Utensils langsung merujuk pada makanan/minuman (FnB)
-    color: 'bg-purple-500', 
+    icon: <UtensilsCrossed size={40} />, // Lebih spesifik untuk pengelolaan dapur/menu
+    color: 'bg-amber-500', // Amber/Oranye cerah membangkitkan nafsu makan (FnB)
     path: '/menu/manage' 
   },
   { 
     title: 'Laba Rugi', 
-    icon: <Calculator size={40} />, // Calculator melambangkan perhitungan profit bersih
-    color: 'bg-slate-700', 
+    icon: <Scale size={40} />, // Timbangan melambangkan keseimbangan (Laba vs Rugi)
+    color: 'bg-violet-600', 
     path: '/profit-loss' 
   },
   { 
     title: 'Setting', 
-    icon: <Settings size={40} />,
-    color: 'bg-zinc-500', 
+    icon: <Settings2 size={40} />, // Settings2 terlihat lebih modern
+    color: 'bg-slate-500', 
     path: '/settings' 
   },
 ];

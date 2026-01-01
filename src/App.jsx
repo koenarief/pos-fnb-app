@@ -15,6 +15,7 @@ import AddMenu from "./pages/AddMenu";
 import ManageMenu from "./pages/ManageMenu";
 import Reports from "./pages/Reports";
 import ReportsByDate from "./pages/ReportsByDate";
+import ReportsByMonth from "./pages/ReportsByMonth";
 import Expenses from "./pages/Expenses";
 import ProfitLoss from "./pages/ProfitLoss";
 import Settings from './pages/Settings';
@@ -76,6 +77,10 @@ function App() {
           <Route
             path="/reports-by-date"
             element={user ? <ReportsByDate /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/reports-by-month"
+            element={user ? <ReportsByMonth /> : <Navigate to="/login" />}
           />
           <Route
             path="/menu/add"
