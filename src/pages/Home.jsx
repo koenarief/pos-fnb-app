@@ -38,6 +38,12 @@ const menuItems = [
     path: '/reports' 
   },
   { 
+    title: 'Laporan Harian', 
+    icon: <BarChart3 size={40} />, // BarChart3 mencerminkan grafik data penjualan
+    color: 'bg-emerald-500', 
+    path: '/reports-by-date' 
+  },
+  { 
     title: 'Manajemen Menu', 
     icon: <Utensils size={40} />, // Utensils langsung merujuk pada makanan/minuman (FnB)
     color: 'bg-purple-500', 

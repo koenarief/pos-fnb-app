@@ -14,6 +14,7 @@ import POS from "./pages/POS";
 import AddMenu from "./pages/AddMenu";
 import ManageMenu from "./pages/ManageMenu";
 import Reports from "./pages/Reports";
+import ReportsByDate from "./pages/ReportsByDate";
 import Expenses from "./pages/Expenses";
 import ProfitLoss from "./pages/ProfitLoss";
 import Settings from './pages/Settings';
@@ -73,6 +74,10 @@ function App() {
             element={user ? <Reports /> : <Navigate to="/login" />}
           />
           <Route
+            path="/reports-by-date"
+            element={user ? <ReportsByDate /> : <Navigate to="/login" />}
+          />
+          <Route
             path="/menu/add"
             element={user ? <AddMenu /> : <Navigate to="/login" />}
           />
@@ -88,7 +93,7 @@ function App() {
             path="/profit-loss"
             element={user ? <ProfitLoss /> : <Navigate to="/login" />}
           />
-		  <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
+          <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
         </Routes>
       </Router>
       <ToastContainer />
