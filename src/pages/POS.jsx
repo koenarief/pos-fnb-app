@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { auth } from "../firebase/config"; // Import auth
-import {  saveTransaction } from "../firebase/dataService";
+import { saveTransaction } from "../firebase/dataService";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { toast } from "react-toastify";
 // import { printReceipt } from "../utils/printer";
 import { useUserClaims } from "../firebase/userClaims";
@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, clearCart } from '../store/cartSlice';
 import { fetchProducts } from '../store/productSlice';
 import { fetchMerchantProfile } from '../store/merchantSlice';
+import UserHeader from '../components/UserHeader';
 
 const POS = () => {
   const navigate = useNavigate();
@@ -91,19 +92,10 @@ const POS = () => {
   
   return (
     <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header POS - Tetap di atas */}
-      <div className="bg-white p-4 flex items-center gap-4 border-b shrink-0">
-        <button
-          onClick={() => navigate("/")}
-          className="p-2 hover:bg-gray-100 rounded-full"
-        >
-          <ArrowLeft />
-        </button>
-        <h2 className="text-xl font-bold">Transaksi {profile?.merchantName}</h2>
-      </div>
+
+      <UserHeader title="Transaksi Kasir" />
 
       {/* Container Utama: flex-col (HP), flex-row (Desktop) */}
-        
 
 
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">

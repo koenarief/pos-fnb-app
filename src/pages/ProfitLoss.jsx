@@ -38,7 +38,7 @@ const ProfitLoss = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full transition">
+        <button onClick={() => navigate('/home')} className="p-2 hover:bg-gray-100 rounded-full transition">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold text-gray-800">Laporan Laba Rugi</h1>

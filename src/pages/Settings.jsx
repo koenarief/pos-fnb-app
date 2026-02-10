@@ -53,7 +53,7 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b px-6 py-4 flex items-center gap-4 sticky top-0 z-10">
-        <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full transition">
+        <button onClick={() => navigate('/home')} className="p-2 hover:bg-gray-100 rounded-full transition">
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-xl font-bold text-gray-800">Pengaturan Toko</h1>

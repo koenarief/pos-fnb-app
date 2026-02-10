@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, Receipt, Wallet, Loader2, Calendar } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 import { useUserClaims } from "../firebase/userClaims";
+import UserHeader from '../components/UserHeader';
 
 const Expenses = () => {
   const navigate = useNavigate();
@@ -44,10 +45,8 @@ const Expenses = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b px-6 py-4 flex items-center gap-4">
-        <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft /></button>
-        <h1 className="text-xl font-bold">Pengeluaran Belanja</h1>
-      </header>
+
+      <UserHeader title="Pengeluaran Belanja"/>
 
       <main className="p-4 md:p-8 max-w-4xl mx-auto w-full space-y-6">
         {/* Form Input */}

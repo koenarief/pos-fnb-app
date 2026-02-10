@@ -143,7 +143,7 @@ const Toko = () => {
       {/* Header */}
       <div className="bg-white p-4 flex items-center gap-4 border-b shrink-0">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/home")}
           className="p-2 hover:bg-gray-100 rounded-full"
         >
           <ArrowLeft />

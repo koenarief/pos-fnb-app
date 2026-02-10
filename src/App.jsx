@@ -55,7 +55,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/toko/:merchantId" element={<Toko />} />
-          <Route path="/toko" element={<Toko />} />
+          <Route path="/" element={<Toko />} />
           <Route
             path="/login"
             element={!user ? <Login /> : <Navigate to="/" />}
@@ -65,7 +65,7 @@ function App() {
             element={!user ? <Register /> : <Navigate to="/" />}
           />
           <Route
-            path="/"
+            path="/home"
             element={user ? <Home /> : <Navigate to="/login" />}
           />
           <Route
