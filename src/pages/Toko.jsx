@@ -90,7 +90,10 @@ const Toko = () => {
         customer: customerData, // Tambahkan data user ke transaksi
         cashierEmail: auth.currentUser?.email || "Guest/Customer"
       });
-      
+
+      const merchantPhone = profile?.phoneNumber || "62818278205";
+      sendWhatsAppNotification(merchantPhone, customerData, cartItems, totalAmount);
+
       toast.success("Pesanan berhasil dikirim!");
       dispatch(clearCart());
       setIsModalOpen(false);
@@ -99,6 +102,35 @@ const Toko = () => {
     }
   };
 
+  const sendWhatsAppNotification = (merchantPhone, customer, items, total) => {
+    // Format daftar item
+    const itemDetails = items
+      .map((item) => `- ${item.name} (x${item.qty}): Rp ${(item.price * item.qty).toLocaleString()}`)
+      .join("\n");
+
+    const message = `Halo ${profile?.merchantName || "Admin"},\n\n` +
+      `Ada pesanan baru!\n\n` +
+      `*Detail Pembeli:* \n` +
+      `- Nama: ${customer.nama}\n` +
+      `- Alamat: ${customer.alamat}\n` +
+      `- WA: ${customer.nomorWA}\n\n` +
+      `*Daftar Pesanan:* \n` +
+      `${itemDetails}\n\n` +
+      `*Total Bayar: Rp ${total.toLocaleString()}*\n\n` +
+      `Mohon segera diproses ya, terima kasih!`;
+
+    // Encode pesan untuk URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Bersihkan nomor telepon (hilangkan karakter non-digit)
+    const cleanPhone = merchantPhone.replace(/\D/g, "");
+    
+    // Pastikan format nomor diawali 62 atau format internasional lainnya
+    const finalPhone = cleanPhone.startsWith("0") ? "62" + cleanPhone.slice(1) : cleanPhone;
+
+    // Buka WhatsApp di tab baru
+    window.open(`https://wa.me/${finalPhone}?text=${encodedMessage}`, "_blank");
+  };
 
   if (loading) return (
     <div className="h-screen flex items-center justify-center">
