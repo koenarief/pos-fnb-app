@@ -11,6 +11,7 @@ import { auth } from "./firebase/config";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import POS from "./pages/POS";
+import Toko from "./pages/Toko";
 import AddMenu from "./pages/AddMenu";
 import ManageMenu from "./pages/ManageMenu";
 import Reports from "./pages/Reports";
@@ -53,6 +54,8 @@ function App() {
     <div>
       <Router>
         <Routes>
+          <Route path="/toko/:merchantId" element={<Toko />} />
+          <Route path="/toko" element={<Toko />} />
           <Route
             path="/login"
             element={!user ? <Login /> : <Navigate to="/" />}
