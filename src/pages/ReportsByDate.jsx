@@ -31,8 +31,7 @@ const ReportsByDate = () => {
 
         // 2. Grouping berdasarkan Tanggal (YYYY-MM-DD)
         const grouped = data.reduce((acc, transaction) => {
-          // Konversi Firestore Timestamp ke Date object jika perlu
-          const dateObj = transaction.date?.toDate ? transaction.date.toDate() : new Date(transaction.date);
+          const dateObj = transaction.createdAt?.toDate ? transaction.createdAt.toDate() : new Date(transaction.createdAt);
           const dateKey = dateObj.toLocaleDateString('id-ID', {
             year: 'numeric', month: 'long', day: 'numeric'
           });

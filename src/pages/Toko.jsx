@@ -100,25 +100,6 @@ const Toko = () => {
   };
 
 
-  const handleCheckout = async () => {
-    if (cartItems.length === 0) return toast("Keranjang kosong!");
-
-    try {
-      // 3. Simpan transaksi dengan ID Merchant dari URL
-      await saveTransaction(merchantId, userId, {
-        items: cartItems,
-        totalAmount: totalAmount,
-        cashierEmail: auth.currentUser?.email || "Guest/Customer",
-        createdAt: new Date().toISOString()
-      });
-      toast.success("Pesanan berhasil dikirim!");
-      dispatch(clearCart());
-    } catch (error) {
-      console.error("Gagal simpan transaksi:", error);
-      toast.error(`Gagal: ${error.message}`);
-    }
-  };
-
   if (loading) return (
     <div className="h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-blue-600" size={40} />

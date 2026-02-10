@@ -7,13 +7,13 @@ export const getTransactions = async (merchantId) => {
   if (!merchantId) return [];
   const transCol = collection(db, 'merchants', merchantId, 'transactions');
   // Urutkan berdasarkan waktu terbaru
-  const q = query(transCol, orderBy('timestamp', 'desc'));
+  const q = query(transCol, orderBy('createdAt', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ 
     id: doc.id, 
     ...doc.data(),
     // Konversi timestamp Firebase ke JS Date agar mudah dibaca
-    date: doc.data().timestamp?.toDate() 
+    date: doc.data().createdAt?.toDate ? doc.data().createdAt?.toDate() : doc.data().timestamp?.toDate()
   }));
 };
 
@@ -55,7 +55,7 @@ export const saveTransaction = async (merchantId, userId, transactionData) => {
   return await addDoc(transCol, {
     ...transactionData,
     userId: userId,
-    timestamp: serverTimestamp()
+    createdAt: serverTimestamp()
   });
 };
 
@@ -101,14 +101,14 @@ export const addExpense = async (merchantId, userId, expenseData) => {
     ...expenseData,
     userId: userId,
     amount: Number(expenseData.amount),
-    date: serverTimestamp()
+    createdAt: serverTimestamp()
   });
 };
 
 // Ambil List Pengeluaran
-export const getExpenses = async (merchantId, userId) => {
+export const getExpenses = async (merchantId) => {
   const colRef = collection(db, 'merchants', merchantId, 'expenses');
-  const q = query(colRef, orderBy('date', 'desc'));
+  const q = query(colRef, orderBy('createdAt', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
@@ -116,7 +116,7 @@ export const getExpenses = async (merchantId, userId) => {
 // Helper untuk ambil data koleksi apapun milik user
 const getDataByMerchantId = async (merchantId, collectionName) => {
   const colRef = collection(db, 'merchants', merchantId, collectionName);
-  const q = query(colRef, orderBy(collectionName === 'transactions' ? 'timestamp' : 'date', 'desc'));
+  const q = query(colRef, orderBy('createdAt', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({ 
     id: doc.id, 
@@ -167,6 +167,6 @@ export const initializeMerchant = async (userId, merchantName) => {
     merchantName: merchantName,
     address: '',
     phone: '',
-    createdAt: new Date()
+    createdAt: serverTimestamp()
   });
 };

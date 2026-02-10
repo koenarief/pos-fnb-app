@@ -106,7 +106,7 @@ const Expenses = () => {
                       <div>
                         <p className="font-bold text-gray-800">{ex.title}</p>
                         <p className="text-xs text-gray-400 flex items-center gap-1">
-                          <Calendar size={12} /> {ex.date?.toDate().toLocaleDateString('id-ID')}
+                          <Calendar size={12} /> {ex.createdAt?.toDate().toLocaleDateString('id-ID')}
                         </p>
                       </div>
                     </div>
