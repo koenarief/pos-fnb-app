@@ -98,7 +98,10 @@ function App() {
             path="/profit-loss"
             element={user ? <ProfitLoss /> : <Navigate to="/login" />}
           />
-          <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
+          <Route
+            path="/settings"
+            element={user ? <Settings /> : <Navigate to="/login" />}
+          />
         </Routes>
       </Router>
       <ToastContainer />
